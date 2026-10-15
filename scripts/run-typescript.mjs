@@ -1,0 +1,12 @@
+import {build} from 'esbuild';
+import {resolve,basename} from 'node:path';
+import {mkdir} from 'node:fs/promises';
+import {spawn} from 'node:child_process';
+const [entry,...args]=process.argv.slice(2);
+if(!entry)throw new Error('Provide a TypeScript entry file');
+const directory=resolve('.test-artifacts/scripts');await mkdir(directory,{recursive:true});
+const output=resolve(directory,basename(entry).replace(/\.ts$/,'.js'));
+await build({entryPoints:[resolve(entry)],outfile:output,bundle:true,platform:'node',format:'esm',packages:'external',target:'node22'});
+const child=spawn(process.execPath,[output,...args],{stdio:'inherit',windowsHide:true});
+child.on('error',error=>{console.error(error.message);process.exitCode=1;});
+child.on('exit',code=>{process.exitCode=code??1;});

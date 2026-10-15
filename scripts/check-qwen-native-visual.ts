@@ -1,0 +1,10 @@
+import {readFile} from 'node:fs/promises';
+import {resolve} from 'node:path';
+import {readConfig} from '../shared/config.js';
+import {NativeHarness} from '../plugins/cocode-director/native-harness.js';
+const base=readConfig(),config={...base,model:'qwen3.8-flash',baseUrl:process.env.QWEN_BASE_URL!,apiKey:process.env.QWEN_API_KEY!,generationMaxTokens:2048};
+let finished=false;const png=await readFile(resolve('.test-artifacts/export-profile/frame-0.png'));
+const usage={calls:0,promptTokens:0,completionTokens:0,totalTokens:0};
+await new NativeHarness(config,AbortSignal.timeout(120000),usage,resolve('.test-artifacts/qwen-native-visual-smoke'),{message:async()=>{},input:async()=>[],checkpoint:async()=>{},state:async()=>({}),tool:async()=>{}}).run('这是图片工具接口测试。先调用 show_image 查看图片，再调用 finish_response，summary 用中文描述图片主体，然后停止。',{prompt:'测试工具调用'},[{name:'show_image',description:'查看实际图片',parameters:{type:'object',properties:{}},execute:async()=>({__images:[{type:'image_url',image_url:{url:'data:image/png;base64,'+png.toString('base64')}}]})},{name:'finish_response',description:'完成测试',parameters:{type:'object',properties:{summary:{type:'string'}},required:['summary']},execute:async(args)=>{finished=true;console.log(JSON.stringify({visualDescription:args}));return {accepted:true};}}]);
+if(!finished)throw Error('Native tool invocation failed');
+console.log(JSON.stringify({model:config.model,toolCalling:true,usage}));

@@ -1,0 +1,15 @@
+import {cp,readFile,writeFile} from 'node:fs/promises';
+import {resolve,join} from 'node:path';
+import {CreativeRuntime,cleanExecutionEnv} from '../plugins/cocode-director/creative-runtime.js';
+import {CreativeWorkspace} from '../plugins/cocode-director/workspace.js';
+import {readConfig} from '../shared/config.js';
+import {runProcess} from '../plugins/cocode-director/process.js';
+const source=resolve(process.argv[2]),root=resolve('.test-artifacts/export-calibration');
+await cp(source,root,{recursive:true,filter:p=>!/[\\/](?:\.cache|exports|previews|versions|\.harness|\.render-[^\\/]+)(?:[\\/]|$)/.test(p)});
+const spec=JSON.parse(await readFile(join(root,'project.json'),'utf8')),config=readConfig(),signal=new AbortController().signal;
+const runtime=new CreativeRuntime(config,new CreativeWorkspace(root),signal);
+const result=await runtime.render(spec,'exports/check.mp4',{duration:1,start:0});
+const profile=JSON.parse(await readFile(join(root,'.cache/browser-profile.json'),'utf8'));
+const probe=JSON.parse(await runProcess(config.ffprobe,['-v','error','-count_frames','-show_entries','stream=nb_read_frames,width,height','-of','json',join(root,'exports/check.mp4')],root,signal,60000,undefined,cleanExecutionEnv()));
+if(!profile.verified||Number(probe.streams[0].nb_read_frames)!==spec.fps)throw Error('Calibration check failed');
+await writeFile(join(root,'calibration-check.json'),JSON.stringify({result,profile,probe},null,2));console.log(JSON.stringify({result,profile,probe}));

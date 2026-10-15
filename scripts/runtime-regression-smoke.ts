@@ -1,0 +1,24 @@
+import {mkdir,writeFile,readFile} from 'node:fs/promises';
+import {resolve,join} from 'node:path';
+import sharp from 'sharp';
+import {readConfig} from '../shared/config.js';
+import {CreativeWorkspace} from '../plugins/cocode-director/workspace.js';
+import {CreativeRuntime} from '../plugins/cocode-director/creative-runtime.js';
+const root=resolve('.test-artifacts/runtime-regression');await mkdir(root,{recursive:true});
+const workspace=new CreativeWorkspace(root),runtime=new CreativeRuntime(readConfig(),workspace,new AbortController().signal);
+await workspace.write('index.html','<!doctype html><html><body style="margin:0"><script src="build/main.js"></script></body></html>');
+await workspace.write('src/main.js','window.render=()=>{document.body.style.background="red";}');
+await runtime.build('src/main.js','build/main.js');
+const spec={engine:'browser' as const,entry:'index.html',duration:1,width:320,height:180,fps:12};
+await runtime.render(spec,'previews/red.png',{at:0});
+await workspace.write('src/main.js','window.render=()=>{document.body.style.background="blue";}');
+await runtime.render(spec,'previews/blue.png',{at:0});
+const red=await sharp(join(root,'previews/red.png')).stats(),blue=await sharp(join(root,'previews/blue.png')).stats();
+if(red.channels[0].mean<240||blue.channels[2].mean<240||blue.channels[0].mean>10)throw new Error('修改源码后仍渲染了旧 bundle');
+await workspace.write('broken.html','<!doctype html><img src="missing.png"><script>window.render=()=>{}</script>');
+let rejected=false;try{await runtime.render({...spec,entry:'broken.html'},'previews/broken.png',{at:0});}catch{rejected=true;}
+if(!rejected)throw new Error('损坏图片未报错');
+const command=process.platform==='win32'?"Set-Content -LiteralPath 'command-result.txt' -Value 'command-ok'; Write-Output 'test-ok'":"printf command-ok > command-result.txt; printf test-ok";
+const output=await runtime.command(command);if(!output.includes('test-ok')||!(await readFile(join(root,'command-result.txt'),'utf8')).includes('command-ok'))throw new Error('命令执行与文件操作失败');
+await writeFile(join(root,'result.json'),JSON.stringify({staleBundleFixed:true,brokenAssetRejected:true,commandVerified:true},null,2));
+console.log('真实浏览器确认：源码改动触发重新编译、坏图片报错、命令执行与文件结果通过');

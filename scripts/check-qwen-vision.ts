@@ -1,0 +1,14 @@
+import {writeFile} from 'node:fs/promises';
+import {resolve} from 'node:path';
+import {z} from 'zod';
+import {readConfig} from '../shared/config.js';
+import {CreationAgent} from '../plugins/cocode-director/agent.js';
+import {imageFrames} from '../plugins/cocode-director/media.js';
+const base=readConfig(),config={...base,visionModel:'qwen3.8-flash',visionBaseUrl:process.env.QWEN_BASE_URL!,visionApiKey:process.env.QWEN_API_KEY!};
+if(!config.visionModel)throw Error('Vision model is not configured');
+const root=resolve('.test-artifacts/export-profile/workspace');
+const images=await imageFrames(root,[{file:'previews/motion-contact-1.png',label:'同一片段连续抽帧，从左到右、从上到下，间隔0.125秒。'}]);
+const usage={calls:0,promptTokens:0,completionTokens:0,totalTokens:0};
+const result=await new CreationAgent(config,new AbortController().signal,usage).run({system:'请用中文评判提供的真实连续抽帧：描述画面中的主体、文字、构图与变化，判断是否美观、是否像PPT。只能根据实际可见内容回答，不假装已观看全片。',input:{task:'验证图片真正传入视觉模型'},images,vision:true,schema:z.object({description:z.string(),visualIssues:z.array(z.string()),motionObservation:z.string()}),maxTokens:4000});
+await writeFile(resolve('.test-artifacts/export-profile/qwen-vision-motion-check.json'),JSON.stringify({model:config.visionModel,result,usage},null,2));
+console.log(JSON.stringify({model:config.visionModel,result,usage}));

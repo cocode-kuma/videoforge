@@ -1,0 +1,17 @@
+.git
+node_modules
+.env
+video_projects
+logs
+.dsh-videoforge
+dist
+plugins/*/lib
+.test-artifacts
+releases
+vendor
+!vendor
+vendor/*
+!vendor/hyperframes-skills
+.runtime
+.venv-tts
+.backups

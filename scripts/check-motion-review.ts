@@ -1,0 +1,10 @@
+import {readFile,writeFile} from 'node:fs/promises';
+import {join,resolve} from 'node:path';
+import {CreativeWorkspace} from '../plugins/cocode-director/workspace.js';
+import {readConfig} from '../shared/config.js';
+import {motionReview} from '../plugins/cocode-director/motion-review.js';
+const root=resolve('.test-artifacts/export-profile/workspace');
+const result=await motionReview(readConfig(),new CreativeWorkspace(root),'exports/concurrency-full-validation.mp4',JSON.parse(await readFile(join(root,'project.json'),'utf8')),new AbortController().signal);
+if(result.clues.frames!==900||result.picks.length!==3)throw Error('Motion evidence is incomplete');
+await writeFile(join(root,'../motion-review-check.json'),JSON.stringify(result,null,2));
+console.log(JSON.stringify(result));

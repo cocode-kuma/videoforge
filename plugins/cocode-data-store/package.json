@@ -1,0 +1,12 @@
+{
+  "name": "cocode-data-store",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "cocode 酷码工作室 · Cocode Studio VideoForge 独立数据服务",
+  "main": "./lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./package.json": "./package.json"
+  }
+}

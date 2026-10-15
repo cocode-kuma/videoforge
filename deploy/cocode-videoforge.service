@@ -1,0 +1,21 @@
+# cocode 酷码工作室 · Cocode Studio VideoForge
+[Unit]
+Description=cocode Studio VideoForge - cocode 酷码工作室
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=videoforge
+Group=videoforge
+WorkingDirectory=/opt/cocode-videoforge
+Environment=HOME=/var/lib/videoforge
+ExecStart=/usr/bin/npm start
+Restart=on-failure
+RestartSec=5
+KillMode=control-group
+TimeoutStopSec=30
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

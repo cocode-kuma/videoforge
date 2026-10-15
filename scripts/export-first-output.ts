@@ -1,0 +1,12 @@
+import {readFile,copyFile,stat} from 'node:fs/promises';import {join} from 'node:path';
+import {DataStore} from '../plugins/cocode-data-store/index.js';import {readConfig} from '../shared/config.js';
+import {prepareAudio,mixAudio} from '../plugins/cocode-director/audio.js';
+const root=process.cwd(),output=join(root,'outputs',process.argv[2]??'whole-film'),config=readConfig();
+const ids=JSON.parse(await readFile(join(output,'sample-job.json'),'utf8'));
+const store=new DataStore({...config,dataRoot:join(root,'.test-artifacts/sample-data'),logsRoot:join(root,'.test-artifacts/sample-logs')});
+const project=await store.loadProject(ids.userId,ids.projectId),dir=join(await store.projectDir(ids.userId,ids.projectId),'renders',ids.jobId);
+await stat(join(dir,'final.mp4'));
+const plan=await prepareAudio(dir,project.brief!,project.storyboard!,project.assets??[],config,new AbortController().signal);
+await mixAudio(dir,plan,project.brief!.duration,config,new AbortController().signal);
+await copyFile(join(dir,'final.mp4'),join(output,'首次输出-未通过验收.mp4'));
+console.log('原始首次画面已导出，未调用模型或修改画面代码；仍标记未通过验收。');

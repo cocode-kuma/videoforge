@@ -1,0 +1,40 @@
+{
+  "product": "cocode 酷码工作室 · Cocode Studio VideoForge",
+  "repository": "https://github.com/deepseek-ai/deepseek-harness",
+  "version": "0.1.0-rc.6",
+  "releaseCommit": "15148dbd9a1d1f1ef1a26e5749b32af0cd663935",
+  "releaseCommitUrl": "https://github.com/deepseek-ai/deepseek-harness/commit/15148dbd9a1d1f1ef1a26e5749b32af0cd663935",
+  "releaseManifestUrl": "https://github.com/deepseek-ai/deepseek-harness/blob/15148dbd9a1d1f1ef1a26e5749b32af0cd663935/apps/cli/package.json",
+  "metadataUrl": "https://registry.npmjs.org/@deepseek-ai%2Fdsh/0.1.0-rc.6",
+  "fetchedAt": "2026-09-12T03:15:29.069Z",
+  "note": "npm metadata has no gitHead. Source is the official release(dsh): 0.1.0-rc.6 commit, verified by apps/cli/package.json. The npm artifact is independently verified by published SHA-512; this is not a reproducible-build attestation.",
+  "artifacts": [
+    {
+      "file": "deepseek-harness-0.1.0-rc.6-source.tar.gz",
+      "url": "https://api.github.com/repos/deepseek-ai/deepseek-harness/tarball/15148dbd9a1d1f1ef1a26e5749b32af0cd663935",
+      "kind": "upstream-release-source",
+      "bytes": 13744957,
+      "sha256": "362473e0ecd35655f1b51db91b28a9ab2fa7538303908dc0375e2ffc92bc5153"
+    },
+    {
+      "file": "dsh-0.1.0-rc.6.tgz",
+      "url": "https://registry.npmjs.org/@deepseek-ai/dsh/-/dsh-0.1.0-rc.6.tgz",
+      "kind": "official-npm-cli",
+      "integrity": "sha512-brpZfED7ieRa2PQ5tUxMhHrM1pb2CmKFVM/f6yMULBDMicahk+Z2OsHgTwTDnoiZm23Ftu9rQz0NN4pflaoJcg==",
+      "bytes": 32644,
+      "sha256": "1b8a9a0ad3c7feaece47926e0bd37ca151c7ccfa997953afa5fd01261784eadc"
+    },
+    {
+      "file": "LICENSE.deepseek-harness",
+      "kind": "license-or-notices",
+      "bytes": 1065,
+      "sha256": "ebb4f09972aee8608be255debaf78451a68e95c290f55c240dec2ecfa16ea6be"
+    },
+    {
+      "file": "THIRD_PARTY_NOTICES.deepseek-harness.md",
+      "kind": "license-or-notices",
+      "bytes": 15850,
+      "sha256": "61f68731049dbea19ba91ad8cf363dd2778c5f7b1f9a63496a6a62c1129eefee"
+    }
+  ]
+}

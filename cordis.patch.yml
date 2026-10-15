@@ -1,0 +1,11 @@
+# cocode 酷码工作室 · Cocode Studio VideoForge
+# Applied over an EMPTY profile with dsh.profile.bundles: [].
+# No global default session. Each tenant conversation mounts its own native
+# DSH agent/session/loop/persistence/compaction stack in cocode-director.
+- insert:
+    - id: cocode-data-store
+      name: 'cocode-data-store'
+    - id: cocode-director
+      name: 'cocode-director'
+    - id: cocode-studio-ui
+      name: 'cocode-studio-ui'

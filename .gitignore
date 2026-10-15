@@ -1,0 +1,17 @@
+node_modules/
+dist/
+plugins/*/lib/
+.env
+.dsh-videoforge/
+video_projects/
+logs/
+.test-artifacts/
+*.tsbuildinfo
+releases/
+.runtime/
+.venv-tts/
+.backups/
+
+outputs/
+__pycache__/
+*.pyc
